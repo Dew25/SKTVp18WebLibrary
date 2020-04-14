@@ -7,7 +7,9 @@ package servlets;
 
 import entity.Book;
 import entity.Reader;
+import entity.Role;
 import entity.User;
+import entity.UserRoles;
 import java.io.IOException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -20,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.ReaderFacade;
 import session.UserFacade;
+import session.UserRolesFacade;
 import utils.EncryptPass;
 
 /**
@@ -38,6 +41,7 @@ public class LoginController extends HttpServlet {
 @EJB ReaderFacade readerFacade;
 @EJB UserFacade userFacade;
 @EJB BookFacade bookFacade;
+@EJB UserRolesFacade userRolesFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -126,6 +130,11 @@ public class LoginController extends HttpServlet {
                     password = encryptPass.getEncryptPass(password,salts);
                     user = new User(login, password, salts, reader);
                     userFacade.create(user);
+                    UserRoles userRoles = new UserRoles();
+                    userRoles.setUser(user);
+                    Role roleUser = userRolesFacade.findByRoleName("USER");
+                    userRoles.setRole(roleUser);
+                    userRolesFacade.create(userRoles);
                 } catch (Exception e) {
                     if(reader != null){
                         readerFacade.remove(reader);

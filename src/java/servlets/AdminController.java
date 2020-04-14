@@ -28,6 +28,7 @@ import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.EncryptPass;
+import utils.RoleManager;
 
 /**
  *
@@ -112,7 +113,8 @@ public class AdminController extends HttpServlet {
                         .forward(request, response);
             return;   
         }
-        if(!"admin".equals(user.getLogin())){
+        RoleManager roleManager = new RoleManager();
+        if(!roleManager.isRole("ADMIN",user)){
             request.setAttribute("info", "У вас нет прав, войдите");
             request.getRequestDispatcher("/WEB-INF/showLogin.jsp")
                         .forward(request, response);

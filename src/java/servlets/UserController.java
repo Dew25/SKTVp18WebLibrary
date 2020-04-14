@@ -24,6 +24,7 @@ import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserFacade;
+import utils.RoleManager;
 
 /**
  *
@@ -63,6 +64,13 @@ public class UserController extends HttpServlet {
         }
         User user = (User) session.getAttribute("user");
         if(user == null){
+            request.setAttribute("info", "У вас нет прав, войдите");
+            request.getRequestDispatcher("/WEB-INF/showLogin.jsp")
+                        .forward(request, response);
+            return;   
+        }
+        RoleManager roleManager = new RoleManager();
+        if(!roleManager.isRole("USER",user)){
             request.setAttribute("info", "У вас нет прав, войдите");
             request.getRequestDispatcher("/WEB-INF/showLogin.jsp")
                         .forward(request, response);
