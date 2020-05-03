@@ -8,9 +8,7 @@ package servlets;
 import entity.Book;
 import entity.History;
 import entity.Reader;
-import entity.Role;
 import entity.User;
-import entity.UserRoles;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +22,6 @@ import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
-import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.EncryptPass;
@@ -33,53 +30,20 @@ import utils.EncryptPass;
  *
  * @author user
  */
-@WebServlet(name = "AdminController",loadOnStartup = 1, urlPatterns = {
+@WebServlet(name = "ManagerController", urlPatterns = {
     
-    "/listReaders",
+    "/newBook",
+    "/addBook",
+   
     
     
 })
-public class AdminController extends HttpServlet {
+public class ManagerController extends HttpServlet {
 @EJB BookFacade bookFacade;
 @EJB ReaderFacade readerFacade;
 @EJB HistoryFacade historyFacade;
 @EJB UserFacade userFacade;
 @EJB UserRolesFacade userRolesFacade;
-@EJB RoleFacade roleFacade;
-
-  @Override
-  public void init() throws ServletException {
-    List<User> listUsers = userFacade.findAll();
-    if(!listUsers.isEmpty()) return;
-    Reader reader = new Reader("Juri", "Melnikov", "juri.melnikov@ivkhk.ee");
-    readerFacade.create(reader);
-    EncryptPass ep = new EncryptPass();
-    String password = "123123";
-    String salts = ep.getSalts();
-    password = ep.getEncryptPass(password, salts);
-    User user = new User("admin", password, salts, reader);
-    userFacade.create(user);
-    UserRoles userRoles = new UserRoles();
-    userRoles.setUser(user);
-    Role role = new Role();
-    role.setRoleName("ADMIN");
-    roleFacade.create(role);
-    userRoles.setRole(role);
-    userRolesFacade.create(userRoles);
-    role.setRoleName("MANAGER");
-    roleFacade.create(role);
-    userRoles.setRole(role);
-    userRolesFacade.create(userRoles);
-    role.setRoleName("USER");
-    roleFacade.create(role);
-    userRoles.setRole(role);
-    userRolesFacade.create(userRoles);
-    
-  }
-  
-
-
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -108,7 +72,7 @@ public class AdminController extends HttpServlet {
                         .forward(request, response);
             return;   
         }
-        boolean isRole = userRolesFacade.isRole("ADMIN",user);
+        boolean isRole = userRolesFacade.isRole("MANAGER",user);
         if(!isRole){
             request.setAttribute("info", "У вас нет прав, войдите");
             request.getRequestDispatcher("/WEB-INF/showLogin.jsp")
@@ -117,13 +81,22 @@ public class AdminController extends HttpServlet {
         }
         String path = request.getServletPath();
         switch (path) {
-            case "/listReaders":    
-                List<Reader> listReaders = readerFacade.findAll();
-                request.setAttribute("listReaders", listReaders);
-                request.getRequestDispatcher("/listReaders.jsp")
+            case "/newBook":
+                request.getRequestDispatcher("/WEB-INF/newBook.jsp")
                         .forward(request, response);
                 break;
-            
+            case "/addBook":
+                String title = request.getParameter("title");
+                String author = request.getParameter("author");
+                String year = request.getParameter("year");
+                String quantity = request.getParameter("quantity");
+                Book book = new Book(title, author, Integer.parseInt(year), Integer.parseInt(quantity));
+                bookFacade.create(book);
+                request.setAttribute("info", "Книга создана");
+                request.setAttribute("book", book);
+                request.getRequestDispatcher("/index.jsp")
+                        .forward(request, response);
+                break;
             
             
         }

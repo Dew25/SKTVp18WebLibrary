@@ -15,6 +15,7 @@
         <H1>Добро пожаловать в SKTVp18WebLibrary!</H1>
         <p>${info}</p>
         <a href="showLogin">Вход</a><br>
+        <a href="logout">Выход</a><br>
         <a href="newBook">Создать книгу</a><br>
         <a href="listBooks">Список книг</a><br>
         <a href="newReader">Создать читателя</a><br>
