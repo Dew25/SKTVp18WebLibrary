@@ -5,6 +5,7 @@
  */
 package entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,66 +14,73 @@ import javax.persistence.Id;
 
 /**
  *
- * @author Irina
+ * @author jvm
  */
 @Entity
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String roleName;
+public class Role implements Serializable {
 
-    public Role() {
-    }
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String roleName;
 
-    public Long getId() {
-        return id;
-    }
+  public Role() {
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Role(String roleName) {
+    this.roleName = roleName;
+  }
 
-    public String getRoleName() {
-        return roleName;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 29 * hash + Objects.hashCode(this.id);
-        hash = 29 * hash + Objects.hashCode(this.roleName);
-        return hash;
-    }
+  public String getRoleName() {
+    return roleName;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Role other = (Role) obj;
-        if (!Objects.equals(this.roleName, other.roleName)) {
-            return false;
-        }
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        return true;
-    }
+  public void setRoleName(String roleName) {
+    this.roleName = roleName;
+  }
 
-    @Override
-    public String toString() {
-        return "Role{" + "id=" + id + ", roleName=" + roleName + '}';
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 79 * hash + Objects.hashCode(this.id);
+    hash = 79 * hash + Objects.hashCode(this.roleName);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-    
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Role other = (Role) obj;
+    if (!Objects.equals(this.roleName, other.roleName)) {
+      return false;
+    }
+    if (!Objects.equals(this.id, other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "Role{" + "id=" + id + ", roleName=" + roleName + '}';
+  }
+  
+  
+  
 }

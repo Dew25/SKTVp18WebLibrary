@@ -15,88 +15,93 @@ import javax.persistence.OneToOne;
 
 /**
  *
- * @author Irina
+ * @author jvm
  */
 @Entity
 public class UserRoles implements Serializable {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @OneToOne
-    private User user;
-    @OneToOne
-    private Role role;
 
-    public UserRoles() {
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @OneToOne
+  private User user;
+  @OneToOne
+  private Role role;
+
+  public UserRoles() {
+  }
+
+  public UserRoles(User user, Role role) {
+    this.user = user;
+    this.role = role;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 47 * hash + Objects.hashCode(this.id);
+    hash = 47 * hash + Objects.hashCode(this.user);
+    hash = 47 * hash + Objects.hashCode(this.role);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    public Long getId() {
-        return id;
+    if (obj == null) {
+      return false;
     }
-
-    public void setId(Long id) {
-        this.id = id;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
-
-    public User getUser() {
-        return user;
+    final UserRoles other = (UserRoles) obj;
+    if (!Objects.equals(this.id, other.id)) {
+      return false;
     }
-
-    public void setUser(User user) {
-        this.user = user;
+    if (!Objects.equals(this.user, other.user)) {
+      return false;
     }
-
-    public Role getRole() {
-        return role;
+    if (!Objects.equals(this.role, other.role)) {
+      return false;
     }
+    return true;
+  }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
+  @Override
+  public String toString() {
+    return "UserRoles{" 
+            + "id=" + id 
+            + ", user=" + user.getLogin()
+            + ", role=" + role.getRoleName()
+            + '}';
+  }
 
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 47 * hash + Objects.hashCode(this.id);
-        hash = 47 * hash + Objects.hashCode(this.user);
-        hash = 47 * hash + Objects.hashCode(this.role);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final UserRoles other = (UserRoles) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        if (!Objects.equals(this.user, other.user)) {
-            return false;
-        }
-        if (!Objects.equals(this.role, other.role)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "UserRoles{" 
-                + "id=" + id 
-                + ", user=" + user.getLogin()
-                + ", role=" + role.getRoleName()
-                + '}';
-    }
-
-    
-    
+  
 }

@@ -28,16 +28,16 @@ import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.EncryptPass;
-import utils.RoleManager;
 
 /**
  *
  * @author user
  */
 @WebServlet(name = "AdminController",loadOnStartup = 1, urlPatterns = {
-    "/newBook",
-    "/addBook",
+    
     "/listReaders",
+    "/showUserManager",
+    "/changeRole",
     
     
 })
@@ -46,42 +46,39 @@ public class AdminController extends HttpServlet {
 @EJB ReaderFacade readerFacade;
 @EJB HistoryFacade historyFacade;
 @EJB UserFacade userFacade;
-@EJB RoleFacade roleFacade;
 @EJB UserRolesFacade userRolesFacade;
+@EJB RoleFacade roleFacade;
 
-    @Override
-    public void init() throws ServletException {
-        List<User> listUsers = userFacade.findAll();
-        if(!listUsers.isEmpty()) return;
-        Reader reader = new Reader("Juri", "Melnikov", "admin@ivkhk-dev.ee");
-        readerFacade.create(reader);
-        String password = "123123";
-        EncryptPass ep = new EncryptPass();
-        String salts = ep.getSalts();
-        password = ep.getEncryptPass(password, salts);
-        User user = new User("admin", password, salts, reader);
-        userFacade.create(user);
-        
-        UserRoles userRoles = new UserRoles();
-        userRoles.setUser(user);
-        
-        Role role = new Role();
-        role.setRoleName("ADMIN");
-        roleFacade.create(role);
-        userRoles.setRole(role);
-        userRolesFacade.create(userRoles);
-        
-        role.setRoleName("MANAGER");
-        roleFacade.create(role);
-        userRoles.setRole(role);
-        userRolesFacade.create(userRoles);
-        
-        role.setRoleName("USER");
-        roleFacade.create(role);
-        userRoles.setRole(role);
-        userRolesFacade.create(userRoles);
-        
-    }
+  @Override
+  public void init() throws ServletException {
+    List<User> listUsers = userFacade.findAll();
+    if(!listUsers.isEmpty()) return;
+    Reader reader = new Reader("Juri", "Melnikov", "juri.melnikov@ivkhk.ee");
+    readerFacade.create(reader);
+    EncryptPass ep = new EncryptPass();
+    String password = "123123";
+    String salts = ep.getSalts();
+    password = ep.getEncryptPass(password, salts);
+    User user = new User("admin", password, salts, reader);
+    userFacade.create(user);
+    UserRoles userRoles = new UserRoles();
+    userRoles.setUser(user);
+    Role role = new Role();
+    role.setRoleName("ADMIN");
+    roleFacade.create(role);
+    userRoles.setRole(role);
+    userRolesFacade.create(userRoles);
+    role.setRoleName("MANAGER");
+    roleFacade.create(role);
+    userRoles.setRole(role);
+    userRolesFacade.create(userRoles);
+    role.setRoleName("USER");
+    roleFacade.create(role);
+    userRoles.setRole(role);
+    userRolesFacade.create(userRoles);
+    
+  }
+  
 
 
 
@@ -113,8 +110,8 @@ public class AdminController extends HttpServlet {
                         .forward(request, response);
             return;   
         }
-        RoleManager roleManager = new RoleManager();
-        if(!roleManager.isRole("ADMIN",user)){
+        boolean isRole = userRolesFacade.isRole("ADMIN",user);
+        if(!isRole){
             request.setAttribute("info", "У вас нет прав, войдите");
             request.getRequestDispatcher("/WEB-INF/showLogin.jsp")
                         .forward(request, response);
@@ -122,32 +119,57 @@ public class AdminController extends HttpServlet {
         }
         String path = request.getServletPath();
         switch (path) {
-            case "/newBook":
-                request.getRequestDispatcher("/WEB-INF/newBook.jsp")
-                        .forward(request, response);
-                break;
-            case "/addBook":
-                String title = request.getParameter("title");
-                String author = request.getParameter("author");
-                String year = request.getParameter("year");
-                String quantity = request.getParameter("quantity");
-                Book book = new Book(title, author, Integer.parseInt(year), Integer.parseInt(quantity));
-                bookFacade.create(book);
-                request.setAttribute("info", "Книга создана");
-                request.setAttribute("book", book);
-                request.getRequestDispatcher("/index.jsp")
-                        .forward(request, response);
-                break;
-            
-            
             case "/listReaders":    
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
                 request.getRequestDispatcher("/listReaders.jsp")
                         .forward(request, response);
                 break;
-            
-            
+            case "/showUserManager":
+                List<User> listUsers = userFacade.findAll();
+                List<Role> listRoles = roleFacade.findAll();
+                request.setAttribute("listUsers", listUsers);
+                request.setAttribute("listRoles", listRoles);
+                request.getRequestDispatcher("/WEB-INF/showUserManager.jsp")
+                        .forward(request, response);
+                break;
+            case "/changeRole":
+                String userId = request.getParameter("userId");
+                String roleId = request.getParameter("roleId");
+                User userChangeRole = userFacade.find(Long.parseLong(userId));
+                Role newRole = roleFacade.find(Long.parseLong(roleId));
+                List<UserRoles> listUserRoles = userRolesFacade.findByUser(userChangeRole);
+                for(UserRoles ur : listUserRoles){
+                    userRolesFacade.remove(ur);
+                }
+                UserRoles userRoles = new UserRoles();
+                userRoles.setUser(userChangeRole);
+                Role role = null;
+                if("ADMIN".equals(newRole.getRoleName())){
+                    role = roleFacade.findByRoleName("ADMIN");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                    role = roleFacade.findByRoleName("MANAGER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                    role = roleFacade.findByRoleName("USER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                }else if("MANAGER".equals(newRole.getRoleName())){
+                    role = roleFacade.findByRoleName("MANAGER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                    role = roleFacade.findByRoleName("USER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                }else if("USER".equals(newRole.getRoleName())){
+                    role = roleFacade.findByRoleName("USER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                }
+                request.getRequestDispatcher("/showUserManager")
+                        .forward(request, response);
+                break;
             
         }
         

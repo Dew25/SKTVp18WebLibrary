@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.ReaderFacade;
+import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.EncryptPass;
@@ -41,6 +42,7 @@ public class LoginController extends HttpServlet {
 @EJB ReaderFacade readerFacade;
 @EJB UserFacade userFacade;
 @EJB BookFacade bookFacade;
+@EJB RoleFacade roleFacade;
 @EJB UserRolesFacade userRolesFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -130,10 +132,10 @@ public class LoginController extends HttpServlet {
                     password = encryptPass.getEncryptPass(password,salts);
                     user = new User(login, password, salts, reader);
                     userFacade.create(user);
+                    Role role = roleFacade.findByRoleName("USER");
                     UserRoles userRoles = new UserRoles();
                     userRoles.setUser(user);
-                    Role roleUser = userRolesFacade.findByRoleName("USER");
-                    userRoles.setRole(roleUser);
+                    userRoles.setRole(role);
                     userRolesFacade.create(userRoles);
                 } catch (Exception e) {
                     if(reader != null){

@@ -5,7 +5,6 @@
  */
 package session;
 
-import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.util.List;
@@ -15,45 +14,44 @@ import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author Irina
+ * @author jvm
  */
 @Stateless
 public class UserRolesFacade extends AbstractFacade<UserRoles> {
 
-    @PersistenceContext(unitName = "SKTVp18WebLibraryPU")
-    private EntityManager em;
+  @PersistenceContext(unitName = "SKTVp18WebLibraryPU")
+  private EntityManager em;
 
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
+  @Override
+  protected EntityManager getEntityManager() {
+    return em;
+  }
+
+  public UserRolesFacade() {
+    super(UserRoles.class);
+  }
+
+  public boolean isRole(String roleName, User user) {
+    List<UserRoles> listUserRoles = em.createQuery("SELECT ur FROM UserRoles ur WHERE ur.user=:user")
+            .setParameter("user", user)
+            .getResultList();
+    for(UserRoles userRole : listUserRoles){
+      if(roleName.equals(userRole.getRole().getRoleName())){
+        return true;
+      }
     }
+    return false;
+    
+  }
 
-    public UserRolesFacade() {
-        super(UserRoles.class);
-    }
-
-    public Role findByRoleName(String roleName) {
+    public List<UserRoles> findByUser(User userChangeRole) {
         try {
-            UserRoles userRoles = (UserRoles) em.createQuery("SELECT ur FROM UserRoles ur WHERE ur.role.roleName = :roleName")
-                    .setParameter("roleName", roleName)
-                    .getSingleResult();
-            return userRoles.getRole();
+            return em.createQuery("SELECT ur FROM UserRoles ur WHERE ur.user = :user")
+                    .setParameter("user", userChangeRole)
+                    .getResultList();
         } catch (Exception e) {
             return null;
         }
     }
-
-    public boolean isRole(String roleName, User user) {
-        List<UserRoles> listUserRoles = em.createQuery("SELECT ur FROM UserRoles ur WHERE ur.user = :user")
-                .setParameter("user", user)
-                .getResultList();
-        List<Role> listRoles = null;
-        for (UserRoles userRole : listUserRoles) {
-            if(roleName.equals(userRole.getRole().getRoleName())){
-                return true;
-            }
-        }
-        return false;
-    }
-    
+  
 }
