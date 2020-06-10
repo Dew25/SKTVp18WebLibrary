@@ -17,7 +17,8 @@
             Название книги: <input type="text" name="title"><br>
             Автор книги: <input type="text" name="author"><br>
             Год издания книги: <input type="text" name="year"><br>
-            Количество экземпляров: <input type="text" name="quantity"><br>
+            Ссылка на обложку: <input type="text" name="cover"><br>
+            Текст книги: <textarea name="textBookInString"></textarea><br>
             <input type="submit" value="Создать книгу"><br>
         </form>
     </body>

@@ -6,12 +6,8 @@
 package servlets;
 
 import entity.Book;
-import entity.History;
-import entity.Reader;
 import entity.User;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,7 +20,6 @@ import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
-import utils.EncryptPass;
 
 /**
  *
@@ -89,8 +84,10 @@ public class ManagerController extends HttpServlet {
                 String title = request.getParameter("title");
                 String author = request.getParameter("author");
                 String year = request.getParameter("year");
-                String quantity = request.getParameter("quantity");
-                Book book = new Book(title, author, Integer.parseInt(year), Integer.parseInt(quantity));
+                String cover = request.getParameter("cover");
+                String textBookInString = request.getParameter("textBookInString");
+                byte[] textBookInBytes = textBookInString.getBytes();
+                Book book = new Book(title, author, Integer.parseInt(year), cover, textBookInBytes);
                 bookFacade.create(book);
                 request.setAttribute("info", "Книга создана");
                 request.setAttribute("book", book);

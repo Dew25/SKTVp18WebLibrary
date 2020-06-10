@@ -41,7 +41,36 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
       }
     }
     return false;
-    
   }
+
+    public List<UserRoles> findByUser(User userChangeRole) {
+        try {
+            return em.createQuery("SELECT ur FROM UserRoles ur WHERE ur.user = :user")
+                    .setParameter("user", userChangeRole)
+                    .getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getTopRole(User u) {
+        List<UserRoles> listUserRoles = this.findByUser(u);
+        for(UserRoles ur : listUserRoles){
+            if("ADMIN".equals(ur.getRole().getRoleName())){
+                return "ADMIN";
+            }
+        }
+        for(UserRoles ur : listUserRoles){
+            if("MANAGER".equals(ur.getRole().getRoleName())){
+                return "MANAGER";
+            }
+        }
+        for(UserRoles ur : listUserRoles){
+            if("USER".equals(ur.getRole().getRoleName())){
+                return "USER";
+            }
+        }
+        return "NoRole";
+    }
   
 }

@@ -13,7 +13,9 @@ import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,6 +38,8 @@ import utils.EncryptPass;
 @WebServlet(name = "AdminController",loadOnStartup = 1, urlPatterns = {
     
     "/listReaders",
+    "/showUserManager",
+    "/changeRole",
     
     
 })
@@ -123,8 +127,55 @@ public class AdminController extends HttpServlet {
                 request.getRequestDispatcher("/listReaders.jsp")
                         .forward(request, response);
                 break;
-            
-            
+            case "/showUserManager":
+                List<User> listUsers = userFacade.findWithoutAdmin();
+                Map<User,String> mapUsers = new HashMap<>();
+                for(User u : listUsers){
+                    mapUsers.put(u, userRolesFacade.getTopRole(u));
+                }
+                List<Role> listRoles = roleFacade.findAll();
+                request.setAttribute("mapUsers", mapUsers);
+                request.setAttribute("listRoles", listRoles);
+                request.getRequestDispatcher("/WEB-INF/showUserManager.jsp")
+                        .forward(request, response);
+                break;
+            case "/changeRole":
+                String userId = request.getParameter("userId");
+                String roleId = request.getParameter("roleId");
+                User userChangeRole = userFacade.find(Long.parseLong(userId));
+                Role newRole = roleFacade.find(Long.parseLong(roleId));
+                List<UserRoles> listUserRoles = userRolesFacade.findByUser(userChangeRole);
+                for(UserRoles ur : listUserRoles){
+                    userRolesFacade.remove(ur);
+                }
+                UserRoles userRoles = new UserRoles();
+                userRoles.setUser(userChangeRole);
+                Role role = null;
+                if("ADMIN".equals(newRole.getRoleName())){
+                    role = roleFacade.findByRoleName("ADMIN");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                    role = roleFacade.findByRoleName("MANAGER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                    role = roleFacade.findByRoleName("USER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                }else if("MANAGER".equals(newRole.getRoleName())){
+                    role = roleFacade.findByRoleName("MANAGER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                    role = roleFacade.findByRoleName("USER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                }else if("USER".equals(newRole.getRoleName())){
+                    role = roleFacade.findByRoleName("USER");
+                    userRoles.setRole(role);
+                    userRolesFacade.create(userRoles);
+                }
+                request.getRequestDispatcher("/showUserManager")
+                        .forward(request, response);
+                break;
             
         }
         

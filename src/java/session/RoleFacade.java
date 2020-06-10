@@ -38,5 +38,6 @@ public class RoleFacade extends AbstractFacade<Role> {
       return null;
     }
   }
+
   
 }

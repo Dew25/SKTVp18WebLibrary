@@ -6,6 +6,7 @@
 package session;
 
 import entity.User;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,6 +35,16 @@ public class UserFacade extends AbstractFacade<User> {
             return (User) em.createQuery("SELECT u FROM User u WHERE u.login = :login")
                     .setParameter("login", login)
                     .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<User> findWithoutAdmin() {
+        try {
+            return em.createQuery("SELECT u FROM User u WHERE u.login != :login")
+                    .setParameter("login", "admin")
+                    .getResultList();
         } catch (Exception e) {
             return null;
         }

@@ -6,11 +6,15 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 
 /**
@@ -25,20 +29,23 @@ public class Book implements Serializable{
     private String title;
     private String author;
     private int year;
-    private int quantity;
-    private int count;
+    private String cover;
+    //Чтобы загружать большие объемы данных, необходимо настроить сервер приложений и базу данных.
+    @Basic(fetch = FetchType.LAZY)
+    @Lob
+    private byte[] textBookInBytes;
     
     public Book() {
     }
 
-    public Book(String title, String author, int year, int quantity) {
+    public Book(String title, String author, int year, String cover, byte[] textBookInBytes) {
         this.title = title;
         this.author = author;
         this.year = year;
-        this.quantity = quantity;
-        this.count = quantity;
+        this.cover = cover;
+        this.textBookInBytes = textBookInBytes;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -46,7 +53,7 @@ public class Book implements Serializable{
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public String getTitle() {
         return title;
     }
@@ -71,36 +78,31 @@ public class Book implements Serializable{
         this.year = year;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public String getCover() {
+        return cover;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
-    @Override
-    public String toString() {
-        return "Book{" + "title=" + title + ", author=" + author + ", year=" + year + ", quantity=" + quantity +", count =" + count + '}';
+    public byte[] getTextBookInBytes() {
+        return textBookInBytes;
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
+    public void setTextBookInBytes(byte[] textBookInBytes) {
+        this.textBookInBytes = textBookInBytes;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        hash = 53 * hash + Objects.hashCode(this.title);
-        hash = 53 * hash + Objects.hashCode(this.author);
-        hash = 53 * hash + this.year;
-        hash = 53 * hash + this.quantity;
-        hash = 53 * hash + this.count;
+        hash = 89 * hash + Objects.hashCode(this.id);
+        hash = 89 * hash + Objects.hashCode(this.title);
+        hash = 89 * hash + Objects.hashCode(this.author);
+        hash = 89 * hash + this.year;
+        hash = 89 * hash + Objects.hashCode(this.cover);
+        hash = 89 * hash + Arrays.hashCode(this.textBookInBytes);
         return hash;
     }
 
@@ -119,26 +121,30 @@ public class Book implements Serializable{
         if (this.year != other.year) {
             return false;
         }
-        if (this.quantity != other.quantity) {
-            return false;
-        }
-        if (this.count != other.count) {
-            return false;
-        }
         if (!Objects.equals(this.title, other.title)) {
             return false;
         }
         if (!Objects.equals(this.author, other.author)) {
             return false;
         }
+        if (!Objects.equals(this.cover, other.cover)) {
+            return false;
+        }
         if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Arrays.equals(this.textBookInBytes, other.textBookInBytes)) {
             return false;
         }
         return true;
     }
 
-    
-    
+    @Override
+    public String toString() {
+        return "Book{" + "id=" + id + ", title=" + title + ", author=" + author + ", year=" + year + '}';
+    }
+
+   
     
     
 }
