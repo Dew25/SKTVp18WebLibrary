@@ -5,14 +5,11 @@
  */
 package servlets;
 
-import entity.Book;
-import entity.History;
 import entity.Reader;
 import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +132,7 @@ public class AdminController extends HttpServlet {
                 }
                 List<Role> listRoles = roleFacade.findAll();
                 request.setAttribute("mapUsers", mapUsers);
+
                 request.setAttribute("listRoles", listRoles);
                 request.getRequestDispatcher("/WEB-INF/showUserManager.jsp")
                         .forward(request, response);

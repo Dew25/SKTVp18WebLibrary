@@ -1,10 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets;
-
 import entity.Book;
 import entity.User;
 import java.io.IOException;
@@ -20,6 +14,8 @@ import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
+
+
 
 /**
  *
